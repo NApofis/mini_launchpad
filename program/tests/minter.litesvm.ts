@@ -11,21 +11,23 @@ import {
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { expect } from "chai";
 import path from "path";
-import { createRequire } from "module";
-import { fileURLToPath } from "url";
+import fs from "fs";
 import BN from "bn.js";
-const require = createRequire(import.meta.url);
-const oracleIdl = require("../target/idl/sol_usd_oracle.json");
-const minterIdl = require("../target/idl/token_minter.json");
+const PROGRAM_ROOT = process.cwd();
+const oracleIdl = JSON.parse(
+    fs.readFileSync(path.resolve(PROGRAM_ROOT, "target/idl/sol_usd_oracle.json"), "utf8")
+);
+const minterIdl = JSON.parse(
+    fs.readFileSync(path.resolve(PROGRAM_ROOT, "target/idl/token_minter.json"), "utf8")
+);
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 const ORACLE_PROGRAM_ID = new PublicKey("4cuvLFFqhaKnTHfeq2FtTUvgudRSe7wq982fA9PBUqBU");
 const MINTER_PROGRAM_ID = new PublicKey("E5erGzaxgCwHqH7RjLXLGWziXj8CXpyN7zW6BRodfFnE");
 
-const ORACLE_SO = path.resolve(__dirname, "../target/deploy/sol_usd_oracle.so");
-const MINTER_SO = path.resolve(__dirname, "../target/deploy/token_minter.so");
+const ORACLE_SO = path.resolve(PROGRAM_ROOT, "target/deploy/sol_usd_oracle.so");
+const MINTER_SO = path.resolve(PROGRAM_ROOT, "target/deploy/token_minter.so");
 
 const ORACLE_SEED = Buffer.from("oracle_state");
 const MINTER_SEED = Buffer.from("minter_config");

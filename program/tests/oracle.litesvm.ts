@@ -4,17 +4,15 @@ import { LiteSVM } from "litesvm";
 import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { expect } from "chai";
 import path from "path";
-import { createRequire } from "module";
-import { fileURLToPath } from "url";
+import fs from "fs";
 import BN from "bn.js";
-const require = createRequire(import.meta.url);
-const oracleIdl = require("../target/idl/sol_usd_oracle.json");
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const PROGRAM_ROOT = process.cwd();
+const oracleIdl = JSON.parse(
+    fs.readFileSync(path.resolve(PROGRAM_ROOT, "target/idl/sol_usd_oracle.json"), "utf8")
+);
 
 const ORACLE_PROGRAM_ID = new PublicKey("4cuvLFFqhaKnTHfeq2FtTUvgudRSe7wq982fA9PBUqBU");
-const ORACLE_SO = path.resolve(__dirname, "../target/deploy/sol_usd_oracle.so");
+const ORACLE_SO = path.resolve(PROGRAM_ROOT, "target/deploy/sol_usd_oracle.so");
 const ORACLE_SEED = Buffer.from("oracle_state");
 
 const coder = new BorshInstructionCoder(oracleIdl as Idl);
