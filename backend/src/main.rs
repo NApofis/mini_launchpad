@@ -374,7 +374,7 @@ mod tests {
     fn to_fixed_6_truncates_fraction_to_six_digits() {
         // TODO(student): this assertion is intentionally wrong.
         // The parser is expected to truncate after 6 digits instead of rounding.
-        assert_eq!(to_fixed_6("1.1234569").unwrap(), 1_123_457);
+        assert_eq!(to_fixed_6("1.1234569").unwrap(), 1_123_456);
     }
 
     #[test]
