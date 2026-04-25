@@ -11,7 +11,12 @@ const oracleIdl = JSON.parse(
     fs.readFileSync(path.resolve(PROGRAM_ROOT, "target/idl/sol_usd_oracle.json"), "utf8")
 );
 
-const ORACLE_PROGRAM_ID = new PublicKey("4cuvLFFqhaKnTHfeq2FtTUvgudRSe7wq982fA9PBUqBU");
+const oracleAddress =
+    (oracleIdl as { address?: string; metadata?: { address?: string } }).address ??
+    (oracleIdl as { metadata?: { address?: string } }).metadata?.address;
+if (!oracleAddress) throw new Error("sol_usd_oracle idl address is missing");
+const ORACLE_PROGRAM_ID = new PublicKey(oracleAddress);
+
 const ORACLE_SO = path.resolve(PROGRAM_ROOT, "target/deploy/sol_usd_oracle.so");
 const ORACLE_SEED = Buffer.from("oracle_state");
 
@@ -82,9 +87,7 @@ describe("sol_usd_oracle (LiteSVM)", () => {
     const decoded = accountsCoder.decode("OracleState", Buffer.from((acct as any).data));
     expect(decoded.admin.toBase58()).to.eq(payer.publicKey.toBase58());
     expect(decoded.price.toNumber()).to.eq(0);
-    // TODO(student): this expectation is intentionally wrong.
-    // Re-check how many decimals the oracle stores for the SOL/USD price.
-    expect(decoded.decimals).to.eq(8);
+    expect(decoded.decimals).to.eq(6);
   });
 
   it("update_price updates price only for admin", () => {

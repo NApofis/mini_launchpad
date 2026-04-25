@@ -21,10 +21,16 @@ const minterIdl = JSON.parse(
     fs.readFileSync(path.resolve(PROGRAM_ROOT, "target/idl/token_minter.json"), "utf8")
 );
 
-
-
-const ORACLE_PROGRAM_ID = new PublicKey("4cuvLFFqhaKnTHfeq2FtTUvgudRSe7wq982fA9PBUqBU");
-const MINTER_PROGRAM_ID = new PublicKey("E5erGzaxgCwHqH7RjLXLGWziXj8CXpyN7zW6BRodfFnE");
+const oracleAddress =
+    (oracleIdl as { address?: string; metadata?: { address?: string } }).address ??
+    (oracleIdl as { metadata?: { address?: string } }).metadata?.address;
+const minterAddress =
+    (minterIdl as { address?: string; metadata?: { address?: string } }).address ??
+    (minterIdl as { metadata?: { address?: string } }).metadata?.address;
+if (!oracleAddress) throw new Error("sol_usd_oracle idl address is missing");
+if (!minterAddress) throw new Error("token_minter idl address is missing");
+const ORACLE_PROGRAM_ID = new PublicKey(oracleAddress);
+const MINTER_PROGRAM_ID = new PublicKey(minterAddress);
 
 const ORACLE_SO = path.resolve(PROGRAM_ROOT, "target/deploy/sol_usd_oracle.so");
 const MINTER_SO = path.resolve(PROGRAM_ROOT, "target/deploy/token_minter.so");
@@ -169,9 +175,8 @@ describe("token_minter (LiteSVM)", () => {
     assertSuccess(res);
 
     const treasuryAfter = svm.getBalance(treasury.publicKey) ?? BigInt(0);
-    // TODO(student): this formula is intentionally broken.
-    // The fee should get smaller when SOL/USD price gets larger.
-    const expectedFee = PRICE.mul(new BN(anchor.web3.LAMPORTS_PER_SOL)).div(FEE_USD);
+
+    const expectedFee = FEE_USD.mul(new BN(anchor.web3.LAMPORTS_PER_SOL)).div(PRICE);
     expect(treasuryAfter - treasuryBefore).to.eq(BigInt(expectedFee.toString()));
 
     const mintAcct = svm.getAccount(mintKeypair.publicKey);
