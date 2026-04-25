@@ -300,14 +300,48 @@ fn parse_token_created(logs: &RpcLogsResponse, _program_id: Pubkey) -> Option<To
 }
 
 fn to_fixed_6(txt: &str) -> Result<u64> {
-    // TODO(student): parse a decimal string into an integer with 6 fixed decimals.
-    // Examples:
-    // - "120" -> 120_000_000
-    // - "120.12" -> 120_120_000
-    // - "0.000001" -> 1
-    // Extra digits after the 6th decimal place should be truncated, not rounded.
-    let _ = txt;
-    todo!("student task: implement fixed-6 parser")
+    const SCALE: u64 = 1_000_000;
+
+    let raw = txt.trim();
+    if raw.is_empty() {
+        return Err(anyhow!("empty price string"));
+    }
+
+    let mut parts = raw.split('.');
+    let whole_str = parts.next().unwrap_or_default();
+    let frac_str = parts.next();
+    if parts.next().is_some() {
+        return Err(anyhow!("invalid decimal format"));
+    }
+    // Обработка целой части
+    if whole_str.is_empty() || !whole_str.chars().all(|c| c.is_ascii_digit()) {
+        return Err(anyhow!("invalid integer part"));
+    }
+    let whole = whole_str.parse::<u64>().context("parse integer part")?;
+    let scaled_whole = whole.checked_mul(SCALE).context("integer part overflow")?;
+
+    // Обработка дробной части
+    let frac = match frac_str {
+        None => 0_u64,
+        Some(s) => {
+            if !s.chars().all(|c| c.is_ascii_digit()) {
+                return Err(anyhow!("invalid fractional part"));
+            }
+            // Урезаем все после 6 знаков
+            let mut frac6: String = s.chars().take(6).collect();
+            while frac6.len() < 6 {
+                // Дополняем 0 до 6 знаков что бы в конце сложить два числа
+                frac6.push('0');
+            }
+            if frac6.is_empty() {
+                0
+            } else {
+                frac6.parse::<u64>().context("parse fractional part")?
+            }
+        }
+    };
+
+    scaled_whole.checked_add(frac).context("fixed-6 overflow")
 }
 
 #[cfg(test)]
