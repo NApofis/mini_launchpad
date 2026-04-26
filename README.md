@@ -97,3 +97,15 @@
 3. `cd program && node scripts/init-local.js` — скопировать `ORACLE_STATE_PUBKEY` в `backend/.env`
 4. `cd backend && cargo run`
 5. `cd frontend && npm run dev` — открыть в браузере и покликать.
+
+
+## Результаты
+### Аккаунты
+- Oracle Program ID: `9BrZp4SooTm9eJ1BR5Eb3EpQbPhC1SuBrqQGxkvsGfFF`
+- Launchpad Program ID: `A1gbTLzurEGTMXp1KnKUqbU6LzUvnG7ZD7m8Soyc9617`
+- Oracle State PDA: `H7dTkGiDnyPBSM32tW7WJ6LWd6ritcTFcA3BnfEKpjpk`
+- 
+### Транзакции
+1. https://explorer.solana.com/address/5B18hvMnL9oPfr7KNNx861LMcvYDLUmg29cEasspYS2Q?cluster=devnet
+2. https://explorer.solana.com/address/93vm9vvfi9rJgwcywN8qZS1r3yis3Uvd9PNCk15rn8AC?cluster=devnet
+3. https://explorer.solana.com/address/Fyx6jSHX1mqAzWR7Jxxy5FFaUcKUmHaaFLbXh346C9J6?cluster=devnet
