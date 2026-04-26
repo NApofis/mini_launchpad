@@ -5,7 +5,7 @@ pub const PRICE_DECIMALS: u8 = 6;
 pub mod state;
 pub use state::OracleState;
 
-declare_id!("DYQf6YqhvjBbPXyoLPRwAa4Q4z45bccdBsMqt4YE2gNF");
+declare_id!("9BrZp4SooTm9eJ1BR5Eb3EpQbPhC1SuBrqQGxkvsGfFF");
 
 fn apply_price_update(oracle: &mut OracleState, new_price: u64, current_slot: u64) -> Result<()> {
     oracle.price = new_price;
